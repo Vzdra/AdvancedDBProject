@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Game Catalogue</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" />
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+  <link rel="stylesheet" href="/assets/css/master.css" />
+</head>
+
+<body>
+  <div class="ui huge top fixed menu inverted">
+    <div class="ui container notopmargin">
+      <a class="item" href="/">Games</a>
+      <div class="right menu">
+        <% if(!userId) { %>
+        <a class="item" href="/login">Log In</a>
+        <a class="item" href="/register">Sign Up</a>
+        <% } else { %>
+          <item class="item">User: <%- userName %></item>
+          <form class="ui form nomargin" method="post" action="/logout">
+            <div class="ui inverted segment">
+              <button class="ui inverted button">Log Out</button>
+            </div>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="imgdiv">
+    <img src="https://i.ytimg.com/vi/SXvQ1nK4oxk/maxresdefault.jpg" />
+  </div>
+
+
+  <div class="ui container">

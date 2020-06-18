@@ -1,0 +1,23 @@
+<%- include('header') -%>
+
+  <h1 class="ui huge header">LOG IN</h1>
+  <div class="ui container" style="width:50%">
+    <form class="ui form" method="post" action="/login">
+      <div class="field">
+        <label>E-mail: </label>
+        <input type="email" name="email" placeholder="E-mail">
+        </div>
+        <% if(errMsg) { %>
+        <div class="ui pointing red basic label">
+          <%- errMsg %>
+        </div>
+        <% } %>
+        <div class="field">
+          <label>Password: </label>
+          <input type="password" name="password" placeholder="Passoword" required="true">
+        </div>
+        <button class="ui secondary button" type="submit">Submit</button>
+    </form>
+  </div>
+
+<%- include('footer') -%>

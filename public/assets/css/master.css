@@ -1,0 +1,37 @@
+#imgdiv img {
+  width: 100%;
+  object-fit: cover;
+}
+
+#imgdiv {
+  height: 450px;
+  overflow: hidden;
+}
+.ui.card, .ui.cards>.card{
+  width:270px;
+}
+
+.card {
+  width: 23%;
+}
+
+.ui.huge.header{
+  text-align: center;
+  font-size: 5em;
+}
+
+.container{
+  margin-top:10px;
+}
+
+form{
+  margin-bottom: 50px;
+}
+
+.nomargin {
+  margin-bottom: 0px;
+}
+
+.notopmargin{
+  margin-top: 0px;
+}

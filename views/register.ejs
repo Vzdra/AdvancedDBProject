@@ -1,0 +1,36 @@
+
+<%- include('header') -%>
+
+<h1 class="ui huge header">REGISTER</h1>
+<div class="ui container" style="width:50%">
+  <form class="ui form" method="post" action="/register">
+    <div class="field">
+      <label>E-mail: </label>
+      <input type="email" name="email" placeholder="E-mail">
+    </div>
+    <% if(errMsg) { %>
+    <div class="ui pointing red basic label">
+      <%- errMsg %>
+    </div>
+    <% } %>
+    <div class="field">
+      <label>Password: </label>
+      <input type="password" name="password" placeholder="Passoword" required="true">
+    </div>
+    <div class="grouped fields">
+      <label>Choose account status:</label>
+      <br />
+        <input type="radio" id="basic" name="acc_status" value="1" checked="checked">
+        <label for="male">Basic</label><br>
+        <input type="radio" id="elite" name="acc_status" value="2">
+        <label for="male">Elite</label><br>
+        <input type="radio" id="premium" name="acc_status" value="3">
+        <label for="male">Premium</label><br>
+        <input type="radio" id="admin" name="acc_status" value="4">
+        <label for="male">Admin</label><br>
+    </div>
+    <button class="ui secondary button" type="submit">Submit</button>
+  </form>
+</div>
+
+<%- include('footer') -%>

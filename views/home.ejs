@@ -1,0 +1,28 @@
+<%- include('header') -%>
+
+<h1 class="ui huge header">GAMES</h1>
+<!-- <button class="ui primary button" onclick="window.location.href = '/games/addgame'">
+  Add Game
+</button> -->
+    <div class="ui link cards" style="margin-top:30px">
+      <% data.forEach(function (d){ %>
+      <div class="card">
+        <a class="image" href="/games/<%= d.gameid %>">
+          <img src="<%= d.gimage %>">
+        </a>
+        <div class="content">
+          <a class="header" href="/games/<%= d.gameid %>"><%= d.gname %></a>
+          <div class="description">
+            <%= d.gdesc %>
+          </div>
+        </div>
+        <div class="extra content">
+          <span class="right floated">
+            Released: <%= d.greldate.getDate() + '-' + ((d.greldate.getUTCMonth() < 1) ? 1 : d.greldate.getUTCMonth()) + '-' + d.greldate.getFullYear() %>
+          </span>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+
+<%- include('footer') -%>
