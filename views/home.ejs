@@ -1,17 +1,19 @@
 <%- include('header') -%>
 
 <h1 class="ui huge header">GAMES</h1>
-<!-- <button class="ui primary button" onclick="window.location.href = '/games/addgame'">
+<% if(status===4){ %>
+<button class="ui primary button" onclick="window.location.href = '/addgame'">
   Add Game
-</button> -->
+</button>
+<% } %>
     <div class="ui link cards" style="margin-top:30px">
       <% data.forEach(function (d){ %>
       <div class="card">
-        <a class="image" href="/games/<%= d.gameid %>">
+        <a class="image" href="">
           <img src="<%= d.gimage %>">
         </a>
         <div class="content">
-          <a class="header" href="/games/<%= d.gameid %>"><%= d.gname %></a>
+          <a class="header" href=""><%= d.gname %></a>
           <div class="description">
             <%= d.gdesc %>
           </div>

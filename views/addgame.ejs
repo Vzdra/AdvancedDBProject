@@ -1,0 +1,54 @@
+<%- include('header') -%>
+
+<h1 class="ui huge header">ADD GAME</h1>
+<div class="ui container" style="width:50%">
+  <form class="ui form" method="post" action="/addgame">
+    <div class="field">
+      <label>Name: </label>
+      <input type="text" name="name" placeholder="Game Name..." required="true">
+    </div>
+    <div class="field">
+      <label>Description: </label>
+      <input type="text" name="description" placeholder="Short Description..." required="true">
+    </div>
+    <div class="field">
+      <label>Image URL: </label>
+      <input type="text" name="imgurl" placeholder="URL..." required="true">
+    </div>
+    <div class="field">
+      <label>Release Date: </label>
+      <input type="date" id="release_date" name="release_date" required="true" />
+    </div>
+    <div class="field">
+      <label>Select Developer: </label>
+      <select class="ui dropdown" required="true">
+        <% developer.forEach(dev => { %>
+          <option value="<%- dev.id %>"><%- dev.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="field">
+      <label>Select Platform: </label>
+      <select class="ui dropdown" required="true">
+        <% platform.forEach(dev => { %>
+          <option value="<%- dev.id %>"><%- dev.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="field">
+      <label>Select Genre: </label>
+      <select class="ui dropdown" required="true">
+        <% genre.forEach(dev => { %>
+          <option value="<%- dev.id %>"><%- dev.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="field">
+      <label>Enter Price: </label>
+      <input type="number" name="price" value="0" required="true" />
+    </div>
+    <button class="ui secondary button" type="submit">Submit</button>
+  </form>
+</div>
+
+<%- include('footer') -%>
