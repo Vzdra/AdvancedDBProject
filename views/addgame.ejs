@@ -21,7 +21,7 @@
     </div>
     <div class="field">
       <label>Select Developer: </label>
-      <select class="ui dropdown" required="true">
+      <select class="ui dropdown" name="dev" required="true">
         <% developer.forEach(dev => { %>
           <option value="<%- dev.id %>"><%- dev.name %></option>
         <% }) %>
@@ -29,7 +29,7 @@
     </div>
     <div class="field">
       <label>Select Platform: </label>
-      <select class="ui dropdown" required="true">
+      <select class="ui dropdown" name="plat" required="true">
         <% platform.forEach(dev => { %>
           <option value="<%- dev.id %>"><%- dev.name %></option>
         <% }) %>
@@ -37,7 +37,7 @@
     </div>
     <div class="field">
       <label>Select Genre: </label>
-      <select class="ui dropdown" required="true">
+      <select class="ui dropdown" name="genre" required="true">
         <% genre.forEach(dev => { %>
           <option value="<%- dev.id %>"><%- dev.name %></option>
         <% }) %>

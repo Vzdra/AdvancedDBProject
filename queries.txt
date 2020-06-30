@@ -1,0 +1,82 @@
+CREATE OR REPLACE function game_catalogue.load_games(skipammount integer)
+returns table(gameid integer, gname varchar, gdesc varchar, gimage varchar, greldate timestamp, gprice numeric) 
+AS $$
+begin 
+	return query select game_catalogue.game.id, game_catalogue.game.name, game_catalogue.game.description, game_catalogue.game.image_link, game_catalogue.game.release_date, game_catalogue.game_price.price
+	from game_catalogue.game
+	inner join game_catalogue.game_genre on game_catalogue.game.id = game_catalogue.game_genre.game_id
+	inner join game_catalogue.genre on game_catalogue.game_genre.genre_id = game_catalogue.genre.id
+	inner join game_catalogue.game_platform on game_catalogue.game.id = game_platform.game_id
+	inner join game_catalogue.platform on game_platform.plat_id = game_catalogue.platform.id
+	inner join game_catalogue.developer on game_catalogue.game.dev_id = game_catalogue.developer.id
+	inner join game_catalogue.game_price on game_catalogue.game.id = game_catalogue.game_price.game_id
+	limit 12
+	offset skipammount;
+end;
+$$
+language 'plpgsql';
+
+--------------------------------------------------------------------------
+
+CREATE OR REPLACE function game_catalogue.insert_game(gname varchar, gdesc varchar, gimage varchar, greldate timestamp, gdev int, gplat int, ggen int, gprice numeric)
+returns boolean
+AS $$
+begin 
+	insert into game_catalogue.game(name, description, image_link, release_date, dev_id)
+	values (gname, gdesc, gimage, greldate, gdev);
+
+	insert into game_catalogue.game_genre(game_id, genre_id)
+	values((
+		select id from game_catalogue.game 
+		where game.name = gname 
+		and game.description = gdesc 
+		and game.dev_id = gdev),
+		ggen);
+		
+	insert into game_catalogue.game_platform(game_id, plat_id)
+	values((
+		select id from game_catalogue.game 
+		where game.name = gname 
+		and game.description = gdesc 
+		and game.dev_id = gdev),
+		gplat);
+		
+	insert into game_catalogue.game_price(game_id, price, valid_from, valid_until)
+	values((
+		select id from game_catalogue.game 
+		where game.name = gname 
+		and game.description = gdesc 
+		and game.dev_id = gdev), gprice, '1990-01-01', '2100-01-01');
+		
+	
+	return true;
+end;
+$$
+language 'plpgsql';
+
+------------------------------------------------------------------------------
+
+drop function game_catalogue.load_owned_games(userid integer);
+
+CREATE OR REPLACE function game_catalogue.load_owned_games(userid integer)
+returns table(pid int, pdate timestamp, gcode varchar, gname varchar, gdesc varchar, gimage varchar, greldate timestamp, gdev varchar, ggen varchar, gplat varchar, gprice numeric) 
+AS $$
+begin
+	
+	return query select game_catalogue.game_in_list.purchase_id, game_catalogue.game_purchase.pch_date, game_catalogue.game_in_list.game_code, game_catalogue.game.name, game_catalogue.game.description, game_catalogue.game.image_link, game_catalogue.game.release_date, game_catalogue.developer.name, game_catalogue.genre.name, game_catalogue.platform.name, game_catalogue.game_price.price
+	from game_catalogue.game_in_list
+	inner join game_catalogue.game_purchase on game_catalogue.game_purchase.purchase_id = game_catalogue.game_in_list.purchase_id 
+	inner join game_catalogue.game on game_catalogue.game_in_list.game_id = game_catalogue.game.id
+	inner join game_catalogue.game_genre on game_catalogue.game.id = game_catalogue.game_genre.game_id
+	inner join game_catalogue.genre on game_catalogue.game_genre.genre_id = game_catalogue.genre.id
+	inner join game_catalogue.game_platform on game_catalogue.game.id = game_platform.game_id
+	inner join game_catalogue.platform on game_platform.plat_id = game_catalogue.platform.id
+	inner join game_catalogue.developer on game_catalogue.game.dev_id = game_catalogue.developer.id
+	inner join game_catalogue.game_price on game_catalogue.game.id = game_catalogue.game_price.game_id
+	where game_catalogue.game_purchase.acc_id = userid;
+
+end;
+$$
+language 'plpgsql';
+
+-----------------------------------------------------------------------------

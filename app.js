@@ -171,20 +171,20 @@ app.get('/addgame', redirectAllButAdmin, (req,res) =>{
   client.query("select id, name from game_catalogue.developer", (err, data) => {
     if(!err){
       developers = data.rows;
-      client.query("select id, name from game_catalogue.platform", (err, data) => {
+      client.query("select id, name from game_catalogue.platform", (err2, data2) => {
         if(!err){
-          platforms = data.rows;
-          client.query("select id, name from game_catalogue.genre", (err, data) => {
+          platforms = data2.rows;
+          client.query("select id, name from game_catalogue.genre", (err3, data3) => {
             if(!err){
-              genre = data.rows;
+              genre = data3.rows;
               res.render('addgame', {userId: userId, userName: userName, status: status, developer: developers, platform: platforms, genre: genre});
             }else{
-              console.log(err);
+              console.log(err3);
             }
             client.end();
           });
         }else{
-          console.log(err);
+          console.log(err2);
         }
       });
     }else{
@@ -198,8 +198,44 @@ app.post('/addgame', redirectAllButAdmin, (req,res) =>{
     connectionString: connectionString
   });
 
+  const game = {
+    name: req.body.name,
+    desc: req.body.description,
+    img: req.body.imgurl,
+    date: req.body.release_date,
+    dev: req.body.dev,
+    plat: req.body.plat,
+    gen: req.body.genre,
+    price: req.body.price
+  };
+
   client.connect();
-  client.query()
+  client.query(
+    "select game_catalogue.insert_game('" +
+    game.name + "','" + game.desc + "','" +
+    game.img + "','" + game.date + "'," +
+    game.dev + ", " + game.plat + ", " +
+    game.gen + ", " + game.price + ")",
+    (err,data) => {
+      if(!err){
+        res.redirect("/home");
+      }else{
+        res.redirect("/addgame");
+      }
+    });
+});
+
+app.get('/mygames', redirectLogin, (req,res) => {
+  const { userId } = req.session;
+
+  const client = new Client({
+    connectionString: connectionString
+  });
+
+  client.connect();
+  client.query("select * from game_catalogue.load_owned_games(" + userId + ")", (err, data) =>{
+
+  });
 });
 
 app.listen(PORT, console.log(

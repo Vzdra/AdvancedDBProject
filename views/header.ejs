@@ -14,6 +14,9 @@
   <div class="ui huge top fixed menu inverted">
     <div class="ui container notopmargin">
       <a class="item" href="/">Games</a>
+      <% if(userId && status!=4){ %>
+        <a class="item" href="/mygames">My Games</a>
+      <% } %>
       <div class="right menu">
         <% if(!userId) { %>
         <a class="item" href="/login">Log In</a>

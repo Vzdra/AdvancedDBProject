@@ -1,0 +1,25 @@
+<%- include('header') -%>
+
+<h1 class="ui huge header">YOUR GAMES</h1>
+<div class="ui container">
+  <div class="ui items" style="margin-top:30px">
+    <% data.forEach(function (d){ %>
+    <div class="item">
+      <div class="ui tiny image">
+        <img src="<%- d.img %>">
+      </div>
+      <div class="middle aligned content">
+        <a class="header"><%- d.name %></a>
+        <div class="description">
+          <p>
+            <%- d.desc %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</div>
+
+
+<%- include('footer') -%>
