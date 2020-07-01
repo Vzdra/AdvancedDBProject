@@ -11,7 +11,8 @@ const app = express();
 
 const PORT = 3000;
 const MAXAGE = 1000 * 60 * 60 * 2;
-const connectionString = 'postgresql://postgres:root@localhost:5432/postgres';
+//const connectionString = 'postgresql://postgres:root@localhost:5432/postgres'; const dBschema = 'game_catalogue';
+const connectionString = 'postgresql://u143096:ALwoCB@localhost:5433/nbp_2020_p7'; const dBschema = "public";
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -67,9 +68,13 @@ app.get('/home', (req,res) => {
 
   currentlyLoaded = Math.floor(Math.random() * 10000);
   client.connect();
-  client.query('select * from game_catalogue.load_games(' + currentlyLoaded + ')', (err, data) => {
-    client.end();
-    res.render("home", {data: data.rows, userId: userId, userName: userName, status: status});
+  client.query('select * from '+ dBschema + '.load_games(' + currentlyLoaded + ')', (err, data) => {
+    if(!err){
+      client.end();
+      res.render("home", {data: data.rows, userId: userId, userName: userName, status: status});
+    }else{
+      console.log(err);
+    }
   });
 });
 
@@ -104,14 +109,14 @@ app.post('/register', (req,res) => {
   };
 
   client.connect();
-  client.query("select id, email from game_catalogue.account where email = '" + newUser.email + "' limit 1", (err, data) =>{
+  client.query("select id, email from "+ dBschema +".account where email = '" + newUser.email + "' limit 1", (err, data) =>{
     if(data){
       if(data.rows.length){
         client.end();
         req.flash('errMsg', 'Email already exists!');
         res.redirect('/register');
       }else{
-        client.query("insert into game_catalogue.account (email, pass, acc_status_id) values('" + newUser.email + "', '" + newUser.password + "', " + newUser.acc_status + ")", (err, succ) =>{
+        client.query("insert into "+ dBschema +".account (email, pass, acc_status_id) values('" + newUser.email + "', '" + newUser.password + "', " + newUser.acc_status + ")", (err, succ) =>{
           if(!err){
             req.flash('succMsg', 'Successfully Registered!');
             client.end();
@@ -134,7 +139,7 @@ app.post('/login', (req,res) => {
   const potentialUser = req.body;
 
   client.connect();
-  client.query("select id, email, acc_status_id from game_catalogue.account where email = '" + potentialUser.email + "' and pass = '" + potentialUser.password + "'", (err, data) => {
+  client.query("select id, email, acc_status_id from " + dBschema + ".account where email = '" + potentialUser.email + "' and pass = '" + potentialUser.password + "'", (err, data) => {
     if(data){
       if(data.rows.length > 0){
         req.session.userId = data.rows[0].id;
@@ -168,13 +173,13 @@ app.get('/addgame', redirectAllButAdmin, (req,res) =>{
   var genre = [];
 
   client.connect();
-  client.query("select id, name from game_catalogue.developer", (err, data) => {
+  client.query("select id, name from "+dBschema+".developer", (err, data) => {
     if(!err){
       developers = data.rows;
-      client.query("select id, name from game_catalogue.platform", (err2, data2) => {
+      client.query("select id, name from "+dBschema+".platform", (err2, data2) => {
         if(!err){
           platforms = data2.rows;
-          client.query("select id, name from game_catalogue.genre", (err3, data3) => {
+          client.query("select id, name from "+dBschema+".genre", (err3, data3) => {
             if(!err){
               genre = data3.rows;
               res.render('addgame', {userId: userId, userName: userName, status: status, developer: developers, platform: platforms, genre: genre});
@@ -211,7 +216,7 @@ app.post('/addgame', redirectAllButAdmin, (req,res) =>{
 
   client.connect();
   client.query(
-    "select game_catalogue.insert_game('" +
+    "select "+dBschema+".insert_game('" +
     game.name + "','" + game.desc + "','" +
     game.img + "','" + game.date + "'," +
     game.dev + ", " + game.plat + ", " +
@@ -233,7 +238,7 @@ app.get('/mygames', redirectLogin, (req,res) => {
   });
 
   client.connect();
-  client.query("select * from game_catalogue.load_owned_games(" + userId + ")", (err, data) =>{
+  client.query("select * from "+dBschema+".load_owned_games(" + userId + ")", (err, data) =>{
 
   });
 });
