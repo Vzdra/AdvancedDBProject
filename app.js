@@ -11,8 +11,8 @@ const app = express();
 
 const PORT = 3000;
 const MAXAGE = 1000 * 60 * 60 * 2;
-//const connectionString = 'postgresql://postgres:root@localhost:5432/postgres'; const dBschema = 'game_catalogue';
-const connectionString = 'postgresql://u143096:ALwoCB@localhost:5433/nbp_2020_p7'; const dBschema = "public";
+const connectionString = 'postgresql://postgres:root@localhost:5432/postgres'; const dBschema = 'game_catalogue';
+//const connectionString = 'postgresql://u143096:ALwoCB@localhost:5433/nbp_2020_p7'; const dBschema = "public";
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -231,7 +231,7 @@ app.post('/addgame', redirectAllButAdmin, (req,res) =>{
 });
 
 app.get('/mygames', redirectLogin, (req,res) => {
-  const { userId } = req.session;
+  const { userId, status, userName } = req.session;
 
   const client = new Client({
     connectionString: connectionString
@@ -239,9 +239,20 @@ app.get('/mygames', redirectLogin, (req,res) => {
 
   client.connect();
   client.query("select * from "+dBschema+".load_owned_games(" + userId + ")", (err, data) =>{
-
+    if(!err){
+      client.end();
+      res.render('mygames', { data: data.rows, userId: userId, status:status, userName:userName });
+    }else{
+      console.log(err);
+    }
   });
 });
+
+app.get('/refund/:purchaseId', redirectLogin, (req,res) => {
+
+});
+
+
 
 app.listen(PORT, console.log(
   "Port: " + PORT

@@ -1,19 +1,32 @@
 <%- include('header') -%>
 
 <h1 class="ui huge header">YOUR GAMES</h1>
-<div class="ui container">
-  <div class="ui items" style="margin-top:30px">
+<div class="ui container" style="width:60%">
+  <div class="ui items" style="margin-top:30px; color:black">
     <% data.forEach(function (d){ %>
     <div class="item">
       <div class="ui tiny image">
-        <img src="<%- d.img %>">
+        <img src="<%- d.gimage %>">
       </div>
       <div class="middle aligned content">
-        <a class="header"><%- d.name %></a>
+        <a class="header"><%- d.gname %></a>
+        <div class="meta">
+          <span><b>Developer: </b><%- d.gdev %></span>
+          <br />
+          <span><b>Date Purchased: </b><%- d.pdate.toISOString().split('T')[0] %></span>
+        </div>
         <div class="description">
           <p>
-            <%- d.desc %>
+            <%- d.gdesc %>
           </p>
+        </div>
+        <div class="extra">
+          <div class="ui label"><%- d.ggen %></div>
+          <div class="ui label"><%- d.gplat %></div>
+          <div class="ui label"><%- d.gcode %></div>
+          <div class="ui right floated red button" href="/refund/<%- d.pid %>">
+            Refund <span><%- d.gprice %> $</span>
+          </div>
         </div>
       </div>
     </div>
