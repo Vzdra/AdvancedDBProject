@@ -101,3 +101,31 @@ begin
 END;
 $$
 language 'plpgsql';
+
+---------------------------------------------------------------
+
+CREATE OR REPLACE function game_catalogue.refund_game(pid integer)
+returns boolean
+AS $$
+declare
+	holder int;
+begin
+	delete from game_catalogue.game_in_list gil 
+	where gil.purchase_id = pid returning gil.game_list_id into holder;
+	
+	update game_catalogue.game_list
+	set num_of_games = num_of_games - 1
+	where acc_id = holder;
+
+	update game_catalogue.game_purchase
+	set pch_status_id = (
+		select id
+		from game_catalogue.purchase_status
+		where name = 'Refunded'
+	)
+	where purchase_id = pid;
+	
+	return true;
+end;
+$$
+language 'plpgsql';
