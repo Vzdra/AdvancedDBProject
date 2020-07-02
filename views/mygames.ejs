@@ -24,9 +24,11 @@
           <div class="ui label"><%- d.ggen %></div>
           <div class="ui label"><%- d.gplat %></div>
           <div class="ui label"><%- d.gcode %></div>
-          <div class="ui right floated red button" href="/refund/<%- d.pid %>">
+          <a href="/refund/<%- d.pid %>">
+          <div class="ui right floated red button">
             Refund <span><%- d.gprice %> $</span>
           </div>
+          </a>
         </div>
       </div>
     </div>

@@ -23,6 +23,13 @@
           </div>
         </div>
         <div class="extra content">
+          <% if (userId && status != 4){ %>
+          <a href="/purchase/<%- d.gameid %>">
+          <div class="ui left floated green button">
+            Purchase
+          </div>
+          </a>
+          <% } %>
           <span class="right floated">
             Released: <%= d.greldate.getDate() + '-' + ((d.greldate.getUTCMonth() < 1) ? 1 : d.greldate.getUTCMonth()) + '-' + d.greldate.getFullYear() %>
           </span>

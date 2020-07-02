@@ -80,3 +80,24 @@ $$
 language 'plpgsql';
 
 -----------------------------------------------------------------------------
+
+CREATE OR REPLACE function game_catalogue.purch_game(gid integer, accid integer, pdate timestamp without time zone, gcode character varying)
+returns boolean
+AS $$
+declare
+	idholder int;
+begin
+   insert into game_catalogue.game_purchase(game_id, acc_id, pch_date, pch_status_id)
+   values(gid, accid, pdate, 1) returning purchase_id into idholder;
+
+   insert into game_catalogue.game_in_list(purchase_id, game_id, game_list_id, game_code, hours_played)
+   values(idholder, gid, accid, gcode, 0);
+
+   update game_catalogue.game_list
+   set num_of_games = num_of_games + 1
+   where acc_id = accid;
+   
+   return true;
+END;
+$$
+language 'plpgsql';

@@ -52,6 +52,40 @@ const redirectAllButAdmin = (req, res, next) => {
   }
 };
 
+const generateCode = () => {
+  const randomCodeLength = Math.floor(Math.random(0,2));
+  console.log(randomCodeLength);
+  const letters = 'QWERTYUIOPASDFGHJKLZXCVBNM1234567890';
+  const maxSnippetLen = 6;
+  var finalCode = '';
+
+  if(randomCodeLength == 0){
+    for(let x = 0; x < maxSnippetLen; x++){
+      finalCode.concat("x");//letters[Math.random(letters.length)]);
+    }
+    finalCode.concat('-');
+    for(let x = 0; x < maxSnippetLen; x++){
+      finalCode.concat(letters[Math.random(letters.length)]);
+    }
+  }else{
+    for(let x = 0; x < maxSnippetLen; x++){
+      finalCode.concat(letters[Math.random(letters.length)]);
+    }
+    finalCode.concat('-');
+    for(let x = 0; x < maxSnippetLen; x++){
+      finalCode.concat(letters[Math.random(letters.length)]);
+    }
+    finalCode.concat('-');
+    for(let x = 0; x < maxSnippetLen; x++){
+      finalCode.concat(letters[Math.random(letters.length)]);
+    }
+  }
+
+  console.log("Final Code:" + finalCode);
+
+  return finalCode;
+};
+
 app.get('/', (req,res) => {
   res.redirect('/home');
 });
@@ -60,8 +94,6 @@ app.get('/home', (req,res) => {
   const client = new Client({
     connectionString: connectionString
   });
-
-  console.log(req.session);
 
   const {succMsg, errMsg}= req.flash();
   const { userId, userName, status } = req.session;
@@ -249,9 +281,48 @@ app.get('/mygames', redirectLogin, (req,res) => {
 });
 
 app.get('/refund/:purchaseId', redirectLogin, (req,res) => {
+  const purchaseId = req.params.purchaseId;
+
+  console.log(req.params.purchaseId);
+
+  const client = new Client({
+    connectionString: connectionString
+  });
+
+  client.connect();
+  client.query("select "+dBschema+".refund_game(" + purchaseId + ")", (err, data) =>{
+    if(!err){
+      client.end();
+      res.redirect("/mygames");
+    }else{
+      console.log(err);
+    }
+  });
 
 });
 
+app.get('/purchase/:gameId', (req,res) => {
+  const gameId = req.params.gameId;
+  const userId = req.session.userId;
+  const now = new Date();
+  const gameCode = generateCode();
+
+  console.log(gameCode);
+
+  // const client = new Client({
+  //   connectionString: connectionString
+  // });
+  //
+  // client.connect();
+  // client.query("select "+dBschema+".purchase_game(" + gameId + "," + userId + ",'" + now +"','" + gameCode + "')", (err, data) =>{
+  //   if(!err){
+  //     client.end();
+  //     res.redirect("/mygames");
+  //   }else{
+  //     console.log(err);
+  //   }
+  // });
+});
 
 
 app.listen(PORT, console.log(
