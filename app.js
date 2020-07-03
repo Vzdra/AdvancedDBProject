@@ -11,8 +11,8 @@ const app = express();
 
 const PORT = 3000;
 const MAXAGE = 1000 * 60 * 60 * 2;
-const connectionString = 'postgresql://postgres:root@localhost:5432/postgres'; const dBschema = 'game_catalogue';
-//const connectionString = 'postgresql://u143096:ALwoCB@localhost:5433/nbp_2020_p7'; const dBschema = "public";
+//const connectionString = 'postgresql://postgres:root@localhost:5432/postgres'; const dBschema = 'game_catalogue';
+const connectionString = 'postgresql://u143096:ALwoCB@localhost:5433/nbp_2020_p7'; const dBschema = "public";
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -142,7 +142,7 @@ app.post('/register', (req,res) => {
         req.flash('errMsg', 'Email already exists!');
         res.redirect('/register');
       }else{
-        client.query("insert into "+ dBschema +".account (email, pass, acc_status_id) values('" + newUser.email + "', '" + newUser.password + "', " + newUser.acc_status + ")", (err, succ) =>{
+        client.query("select "+ dBschema +".register_account('" + newUser.email + "','" + newUser.password + "'," + newUser.acc_status + ")", (err, succ) =>{
           if(!err){
             req.flash('succMsg', 'Successfully Registered!');
             client.end();
@@ -277,8 +277,6 @@ app.get('/mygames', redirectLogin, (req,res) => {
 app.get('/refund/:purchaseId', redirectLogin, (req,res) => {
   const purchaseId = req.params.purchaseId;
 
-  console.log(req.params.purchaseId);
-
   const client = new Client({
     connectionString: connectionString
   });
@@ -295,21 +293,21 @@ app.get('/refund/:purchaseId', redirectLogin, (req,res) => {
 
 });
 
-app.get('/purchase/:gameId', (req,res) => {
+app.get('/purchase/:gameId', redirectLogin, (req,res) => {
   const gameId = req.params.gameId;
   const userId = req.session.userId;
-  var now = new Date();
+  var date = new Date();
   const gameCode = generateCode();
 
-  now = now.toISOString();
+  date = date.toString();
+  date = date.split("GMT")[0];
 
   const client = new Client({
     connectionString: connectionString
   });
 
   client.connect();
-  console.log(gameCode);
-  client.query("select "+dBschema+".purchase_game(" + gameId + "," + userId + ",'" + now +"','" + gameCode + "')", (err, data) =>{
+  client.query("select "+dBschema+".purch_game(" + gameId + "," + userId + ",'" + gameCode + "')", (err, data) =>{
     if(!err){
       client.end();
       res.redirect("/mygames");

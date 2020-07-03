@@ -1,49 +1,49 @@
-CREATE OR REPLACE function game_catalogue.load_games(skipammount integer)
+CREATE OR REPLACE function public.load_games(skipammount integer)
 returns table(gameid integer, gname varchar, gdesc varchar, gimage varchar, greldate timestamp, gprice numeric) 
 AS $$
 begin 
-	return query select game_catalogue.game.id, game_catalogue.game.name, game_catalogue.game.description, game_catalogue.game.image_link, game_catalogue.game.release_date, game_catalogue.game_price.price
-	from game_catalogue.game
-	inner join game_catalogue.game_genre on game_catalogue.game.id = game_catalogue.game_genre.game_id
-	inner join game_catalogue.genre on game_catalogue.game_genre.genre_id = game_catalogue.genre.id
-	inner join game_catalogue.game_platform on game_catalogue.game.id = game_platform.game_id
-	inner join game_catalogue.platform on game_platform.plat_id = game_catalogue.platform.id
-	inner join game_catalogue.developer on game_catalogue.game.dev_id = game_catalogue.developer.id
-	inner join game_catalogue.game_price on game_catalogue.game.id = game_catalogue.game_price.game_id
+	return query select public.game.id, public.game.name, public.game.description, public.game.image_link, public.game.release_date, public.game_price.price
+	from public.game
+	inner join public.game_genre on public.game.id = public.game_genre.game_id
+	inner join public.genre on public.game_genre.genre_id = public.genre.id
+	inner join public.game_platform on public.game.id = game_platform.game_id
+	inner join public.platform on game_platform.plat_id = public.platform.id
+	inner join public.developer on public.game.dev_id = public.developer.id
+	inner join public.game_price on public.game.id = public.game_price.game_id
 	limit 12
 	offset skipammount;
 end;
 $$
 language 'plpgsql';
 
---------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
 
-CREATE OR REPLACE function game_catalogue.insert_game(gname varchar, gdesc varchar, gimage varchar, greldate timestamp, gdev int, gplat int, ggen int, gprice numeric)
+CREATE OR REPLACE function public.insert_game(gname varchar, gdesc varchar, gimage varchar, greldate timestamp, gdev int, gplat int, ggen int, gprice numeric)
 returns boolean
 AS $$
 begin 
-	insert into game_catalogue.game(name, description, image_link, release_date, dev_id)
+	insert into public.game(name, description, image_link, release_date, dev_id)
 	values (gname, gdesc, gimage, greldate, gdev);
 
-	insert into game_catalogue.game_genre(game_id, genre_id)
+	insert into public.game_genre(game_id, genre_id)
 	values((
-		select id from game_catalogue.game 
+		select id from public.game 
 		where game.name = gname 
 		and game.description = gdesc 
 		and game.dev_id = gdev),
 		ggen);
 		
-	insert into game_catalogue.game_platform(game_id, plat_id)
+	insert into public.game_platform(game_id, plat_id)
 	values((
-		select id from game_catalogue.game 
+		select id from public.game 
 		where game.name = gname 
 		and game.description = gdesc 
 		and game.dev_id = gdev),
 		gplat);
 		
-	insert into game_catalogue.game_price(game_id, price, valid_from, valid_until)
+	insert into public.game_price(game_id, price, valid_from, valid_until)
 	values((
-		select id from game_catalogue.game 
+		select id from public.game 
 		where game.name = gname 
 		and game.description = gdesc 
 		and game.dev_id = gdev), gprice, '1990-01-01', '2100-01-01');
@@ -54,46 +54,44 @@ end;
 $$
 language 'plpgsql';
 
-------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
 
-drop function game_catalogue.load_owned_games(userid integer);
-
-CREATE OR REPLACE function game_catalogue.load_owned_games(userid integer)
+CREATE OR REPLACE function public.load_owned_games(userid integer)
 returns table(pid int, pdate timestamp, gcode varchar, gname varchar, gdesc varchar, gimage varchar, greldate timestamp, gdev varchar, ggen varchar, gplat varchar, gprice numeric) 
 AS $$
 begin
 	
-	return query select game_catalogue.game_in_list.purchase_id, game_catalogue.game_purchase.pch_date, game_catalogue.game_in_list.game_code, game_catalogue.game.name, game_catalogue.game.description, game_catalogue.game.image_link, game_catalogue.game.release_date, game_catalogue.developer.name, game_catalogue.genre.name, game_catalogue.platform.name, game_catalogue.game_price.price
-	from game_catalogue.game_in_list
-	inner join game_catalogue.game_purchase on game_catalogue.game_purchase.purchase_id = game_catalogue.game_in_list.purchase_id 
-	inner join game_catalogue.game on game_catalogue.game_in_list.game_id = game_catalogue.game.id
-	inner join game_catalogue.game_genre on game_catalogue.game.id = game_catalogue.game_genre.game_id
-	inner join game_catalogue.genre on game_catalogue.game_genre.genre_id = game_catalogue.genre.id
-	inner join game_catalogue.game_platform on game_catalogue.game.id = game_platform.game_id
-	inner join game_catalogue.platform on game_platform.plat_id = game_catalogue.platform.id
-	inner join game_catalogue.developer on game_catalogue.game.dev_id = game_catalogue.developer.id
-	inner join game_catalogue.game_price on game_catalogue.game.id = game_catalogue.game_price.game_id
-	where game_catalogue.game_purchase.acc_id = userid;
+	return query select public.game_in_list.purchase_id, public.game_purchase.pch_date, public.game_in_list.game_code, public.game.name, public.game.description, public.game.image_link, public.game.release_date, public.developer.name, public.genre.name, public.platform.name, public.game_price.price
+	from public.game_in_list
+	inner join public.game_purchase on public.game_purchase.purchase_id = public.game_in_list.purchase_id 
+	inner join public.game on public.game_in_list.game_id = public.game.id
+	inner join public.game_genre on public.game.id = public.game_genre.game_id
+	inner join public.genre on public.game_genre.genre_id = public.genre.id
+	inner join public.game_platform on public.game.id = game_platform.game_id
+	inner join public.platform on game_platform.plat_id = public.platform.id
+	inner join public.developer on public.game.dev_id = public.developer.id
+	inner join public.game_price on public.game.id = public.game_price.game_id
+	where public.game_purchase.acc_id = userid;
 
 end;
 $$
 language 'plpgsql';
 
------------------------------------------------------------------------------
+--------------------------------------------------------------------------
 
-CREATE OR REPLACE function game_catalogue.purch_game(gid integer, accid integer, pdate timestamp without time zone, gcode character varying)
+CREATE OR REPLACE function public.purch_game(gid integer, accid integer, gcode varchar)
 returns boolean
 AS $$
 declare
 	idholder int;
 begin
-   insert into game_catalogue.game_purchase(game_id, acc_id, pch_date, pch_status_id)
-   values(gid, accid, pdate, 1) returning purchase_id into idholder;
+   insert into public.game_purchase(game_id, acc_id, pch_date, pch_status_id)
+   values(gid, accid,(select now()::timestamp), 1) returning purchase_id into idholder;
 
-   insert into game_catalogue.game_in_list(purchase_id, game_id, game_list_id, game_code, hours_played)
+   insert into public.game_in_list(purchase_id, game_id, game_list_id, game_code, hours_played)
    values(idholder, gid, accid, gcode, 0);
 
-   update game_catalogue.game_list
+   update public.game_list
    set num_of_games = num_of_games + 1
    where acc_id = accid;
    
@@ -102,25 +100,49 @@ END;
 $$
 language 'plpgsql';
 
----------------------------------------------------------------
+select public.purch_game(3057,2,'5EIV53-JJUFHE-BR0W59');
 
-CREATE OR REPLACE function game_catalogue.refund_game(pid integer)
+select * from account a where email='user1@user.com';
+
+-----------------------------------------------------------------------
+
+CREATE OR REPLACE function public.register_account(emailinput varchar, passinput varchar, statusid int)
 returns boolean
 AS $$
 declare
 	holder int;
 begin
-	delete from game_catalogue.game_in_list gil 
+	insert into public.account (email, pass, acc_status_id) 
+	values(emailinput, passinput, statusid) returning id into holder;
+
+	insert into public.game_list(acc_id, num_of_games)
+	values (holder, 0);
+	
+	return true;
+end;
+$$
+language 'plpgsql';
+
+
+-----------------------------------------------------------------------
+
+CREATE OR REPLACE function public.refund_game(pid integer)
+returns boolean
+AS $$
+declare
+	holder int;
+begin
+	delete from public.game_in_list gil 
 	where gil.purchase_id = pid returning gil.game_list_id into holder;
 	
-	update game_catalogue.game_list
+	update public.game_list
 	set num_of_games = num_of_games - 1
 	where acc_id = holder;
 
-	update game_catalogue.game_purchase
+	update public.game_purchase
 	set pch_status_id = (
 		select id
-		from game_catalogue.purchase_status
+		from public.purchase_status
 		where name = 'Refunded'
 	)
 	where purchase_id = pid;
