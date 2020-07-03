@@ -52,36 +52,30 @@ const redirectAllButAdmin = (req, res, next) => {
   }
 };
 
-const generateCode = () => {
-  const randomCodeLength = Math.floor(Math.random(0,2));
-  console.log(randomCodeLength);
+const addLetters = (maxSize) => {
+  const randomCodeLength = Math.floor(Math.random() * 2);
   const letters = 'QWERTYUIOPASDFGHJKLZXCVBNM1234567890';
   const maxSnippetLen = 6;
-  var finalCode = '';
+  var finalCode = "";
 
-  if(randomCodeLength == 0){
-    for(let x = 0; x < maxSnippetLen; x++){
-      finalCode.concat("x");//letters[Math.random(letters.length)]);
+  for(let x = 0; x < maxSize; x++){
+    for(let y = 0; y < maxSnippetLen; y++){
+      let z = letters.charAt(Math.floor(Math.random() * letters.length));
+      finalCode+=z;
     }
-    finalCode.concat('-');
-    for(let x = 0; x < maxSnippetLen; x++){
-      finalCode.concat(letters[Math.random(letters.length)]);
-    }
-  }else{
-    for(let x = 0; x < maxSnippetLen; x++){
-      finalCode.concat(letters[Math.random(letters.length)]);
-    }
-    finalCode.concat('-');
-    for(let x = 0; x < maxSnippetLen; x++){
-      finalCode.concat(letters[Math.random(letters.length)]);
-    }
-    finalCode.concat('-');
-    for(let x = 0; x < maxSnippetLen; x++){
-      finalCode.concat(letters[Math.random(letters.length)]);
+    if(x != maxSize-1){
+      finalCode+="-";
     }
   }
 
-  console.log("Final Code:" + finalCode);
+  return finalCode;
+
+};
+
+const generateCode = () => {
+  const randomCodeLength = Math.floor(Math.random() * 2);
+
+  const finalCode = addLetters(randomCodeLength + 2);
 
   return finalCode;
 };
@@ -304,24 +298,25 @@ app.get('/refund/:purchaseId', redirectLogin, (req,res) => {
 app.get('/purchase/:gameId', (req,res) => {
   const gameId = req.params.gameId;
   const userId = req.session.userId;
-  const now = new Date();
+  var now = new Date();
   const gameCode = generateCode();
 
-  console.log(gameCode);
+  now = now.toISOString();
 
-  // const client = new Client({
-  //   connectionString: connectionString
-  // });
-  //
-  // client.connect();
-  // client.query("select "+dBschema+".purchase_game(" + gameId + "," + userId + ",'" + now +"','" + gameCode + "')", (err, data) =>{
-  //   if(!err){
-  //     client.end();
-  //     res.redirect("/mygames");
-  //   }else{
-  //     console.log(err);
-  //   }
-  // });
+  const client = new Client({
+    connectionString: connectionString
+  });
+
+  client.connect();
+  console.log(gameCode);
+  client.query("select "+dBschema+".purchase_game(" + gameId + "," + userId + ",'" + now +"','" + gameCode + "')", (err, data) =>{
+    if(!err){
+      client.end();
+      res.redirect("/mygames");
+    }else{
+      console.log(err);
+    }
+  });
 });
 
 
